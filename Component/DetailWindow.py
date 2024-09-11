@@ -21,9 +21,51 @@ def create_tab(tab_content: str = None):
     return tab, text_edit
 
 
+def highlight_pattern(text_edit):
+    document = text_edit.document()
+
+    cursor = text_edit.textCursor()
+    cursor.select(cursor.Document)
+    cursor.setCharFormat(QTextCharFormat())
+    cursor.clearSelection()
+
+    highlight_format = QTextCharFormat()
+    highlight_format.setBackground(QColor("#FBACA3"))
+
+    keywords = ["process: ", "Exception: "]
+
+    search_text = document.toPlainText().lower()
+
+    for keyword in keywords:
+        start = 0
+        keyword_lower = keyword.lower()
+
+        while True:
+            index = search_text.find(keyword_lower, start)
+            if index == -1:
+                break
+
+            end_index = index + len(keyword)
+            highlight_end = search_text.find('\n', end_index)
+            comma_index = search_text.find(',', end_index)
+
+            if highlight_end == -1:
+                highlight_end = len(search_text)
+            if comma_index != -1 and comma_index < highlight_end:
+                highlight_end = comma_index
+
+            if end_index < highlight_end:
+                cursor.setPosition(end_index)
+                cursor.movePosition(cursor.Right, cursor.KeepAnchor, highlight_end - end_index)
+                cursor.mergeCharFormat(highlight_format)
+
+            start = highlight_end
+
+
 class DetailWindow(QDialog):
     def __init__(self, path, log_handler: LogHandler):
         super().__init__()
+        self.log_select_list_last_row_index = 0
         self.tab_system_text: QTextEdit = None
         self.tab_crash_text: QTextEdit = None
         self.tab_top_activity_text: QTextEdit = None
@@ -158,6 +200,9 @@ class DetailWindow(QDialog):
         self.log_info_detail_tab.addTab(self.tab_top_activity, "Top Activity Log")
         log_info_detail_layout.addWidget(self.log_info_detail_tab)
 
+        highlight_pattern(self.tab_crash_text)
+        highlight_pattern(self.tab_main_text)
+
         # Log 信息详情 Group Box
         self.log_info_detail_box = QGroupBox("Log 信息详情")
         self.log_info_detail_box.setSizePolicy(self.log_info_detail_box.sizePolicy().horizontalPolicy(),
@@ -241,9 +286,16 @@ class DetailWindow(QDialog):
         self.tab_top_activity_text.setPlainText(top_activity_log_text)
         self.tab_crash_text.clear()
         self.tab_crash_text.setPlainText(crash_log_text)
+
+        highlight_pattern(self.tab_crash_text)
+        highlight_pattern(self.tab_main_text)
+
         self.tab_system_text.clear()
         self.tab_system_text.setPlainText(sys_log_text)
 
     def select_log(self):
+        if self.log_select_list_last_row_index == self.log_select_list.currentRow():
+            return
+        self.log_select_list_last_row_index = self.log_select_list.currentRow()
         self.update_log_info_summary()
         self.update_log_info_detail()
