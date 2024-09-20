@@ -72,12 +72,14 @@ class DetailWindow(QDialog):
         self.tab_activity_text: QTextEdit = None
         self.tab_proc_text: QTextEdit = None
         self.tab_main_text: QTextEdit = None
+        self.tab_notification_text: QTextEdit = None
         self.tab_top_activity: QWidget = None
         self.tab_activity: QWidget = None
         self.tab_proc: QWidget = None
         self.tab_main: QWidget = None
         self.tab_crash: QWidget = None
         self.tab_system: QWidget = None
+        self.tab_notification: QWidget = None
         self.log_path = path
         self.spacer: QSpacerItem = None
         self.log_info_summary_label: QLabel = None
@@ -183,21 +185,23 @@ class DetailWindow(QDialog):
         self.log_info_detail_tab.setMinimumWidth(800)
 
         (main_log_text, proc_log_text, activity_log_text, top_activity_log_text,
-         crash_log_text, sys_log_text) = self.get_detail_logs()
+         crash_log_text, sys_log_text, notification_log_text) = self.get_detail_logs()
 
         self.tab_main, self.tab_main_text = create_tab(main_log_text)
         self.tab_proc, self.tab_proc_text = create_tab(proc_log_text)
         self.tab_activity, self.tab_activity_text = create_tab(activity_log_text)
         self.tab_top_activity, self.tab_top_activity_text = create_tab(top_activity_log_text)
+        self.tab_notification, self.tab_notification_text = create_tab(notification_log_text)
         self.tab_crash, self.tab_crash_text = create_tab(crash_log_text)
         self.tab_system, self.tab_system_text = create_tab(sys_log_text)
 
         self.log_info_detail_tab.addTab(self.tab_crash, "Crash Log")
         self.log_info_detail_tab.addTab(self.tab_main, "Main Log")
-        self.log_info_detail_tab.addTab(self.tab_system, "System Log")
+        self.log_info_detail_tab.addTab(self.tab_system, "Anr Log")
         self.log_info_detail_tab.addTab(self.tab_proc, "Proc Log")
         self.log_info_detail_tab.addTab(self.tab_activity, "Activity Log")
         self.log_info_detail_tab.addTab(self.tab_top_activity, "Top Activity Log")
+        self.log_info_detail_tab.addTab(self.tab_notification, "Notification Log")
         log_info_detail_layout.addWidget(self.log_info_detail_tab)
 
         highlight_pattern(self.tab_crash_text)
@@ -258,7 +262,7 @@ class DetailWindow(QDialog):
 
     def get_detail_logs(self):
         main_log = self.log_handler.get_main_log(self.log_select_list.currentRow())
-        proc_log, activity_log, top_activity_log = (
+        proc_log, activity_log, top_activity_log, notification_log = (
             self.log_handler.get_event_log(self.log_select_list.currentRow()))
         crash_log, _ = self.log_handler.get_crash_log(self.log_select_list.currentRow())
         sys_log, _ = self.log_handler.get_sys_log(self.log_select_list.currentRow())
@@ -267,14 +271,15 @@ class DetailWindow(QDialog):
         proc_log_text = get_log_text(proc_log)
         activity_log_text = get_log_text(activity_log)
         top_activity_log_text = get_log_text(top_activity_log)
+        notification_log_text = get_log_text(notification_log)
         crash_log_text = get_log_text(crash_log)
         sys_log_text = get_log_text(sys_log)
         return (main_log_text, proc_log_text, activity_log_text, top_activity_log_text,
-                crash_log_text, sys_log_text)
+                crash_log_text, sys_log_text, notification_log_text)
 
     def update_log_info_detail(self):
         (main_log_text, proc_log_text, activity_log_text, top_activity_log_text,
-         crash_log_text, sys_log_text) = self.get_detail_logs()
+         crash_log_text, sys_log_text, notification_log_text) = self.get_detail_logs()
 
         self.tab_main_text.clear()
         self.tab_main_text.setPlainText(main_log_text)
@@ -286,6 +291,8 @@ class DetailWindow(QDialog):
         self.tab_top_activity_text.setPlainText(top_activity_log_text)
         self.tab_crash_text.clear()
         self.tab_crash_text.setPlainText(crash_log_text)
+        self.tab_notification_text.clear()
+        self.tab_notification_text.setPlainText(notification_log_text)
 
         highlight_pattern(self.tab_crash_text)
         highlight_pattern(self.tab_main_text)

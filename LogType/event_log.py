@@ -4,6 +4,7 @@ class EventLog:
         self.proc_log = []
         self.activity_log = []
         self.top_activity_log = []
+        self.notification_log = []
         self.analyze_events_log()
 
     def analyze_events_log(self):
@@ -15,10 +16,12 @@ class EventLog:
                     self.activity_log.append(line.replace('\n', ''))
                 if ' I wm_on_top_resumed_gained_called:' in line:
                     self.top_activity_log.append(line.replace('\n', ''))
-        return self.proc_log, self.activity_log, self.top_activity_log
+                if ' I notification_enqueue: ' in line:
+                    self.notification_log.append(line.replace('\n', ''))
+        return self.proc_log, self.activity_log, self.top_activity_log, self.notification_log
 
     def get_events_log(self):
-        return self.proc_log, self.activity_log, self.top_activity_log
+        return self.proc_log, self.activity_log, self.top_activity_log, self.notification_log
 
     def get_proc_log(self):
         return self.proc_log
@@ -28,3 +31,6 @@ class EventLog:
 
     def get_top_activity_log(self):
         return self.top_activity_log
+
+    def get_notification_log(self):
+        return self.notification_log
