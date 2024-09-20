@@ -2,6 +2,7 @@ class EventLog:
     def __init__(self, _log_file):
         self.log_file = _log_file
         self.proc_log = []
+        self.proc_kill_log = []
         self.activity_log = []
         self.top_activity_log = []
         self.notification_log = []
@@ -18,13 +19,19 @@ class EventLog:
                     self.top_activity_log.append(line.replace('\n', ''))
                 if ' I notification_enqueue: ' in line:
                     self.notification_log.append(line.replace('\n', ''))
-        return self.proc_log, self.activity_log, self.top_activity_log, self.notification_log
+                if ' I am_kill : ' in line:
+                    self.proc_kill_log.append(line.replace('\n', ''))
+
+        return self.proc_log, self.proc_kill_log, self.activity_log, self.top_activity_log, self.notification_log
 
     def get_events_log(self):
-        return self.proc_log, self.activity_log, self.top_activity_log, self.notification_log
+        return self.proc_log, self.proc_kill_log, self.activity_log, self.top_activity_log, self.notification_log
 
     def get_proc_log(self):
         return self.proc_log
+
+    def get_proc_kill_log(self):
+        return self.proc_kill_log
 
     def get_activity_log(self):
         return self.activity_log

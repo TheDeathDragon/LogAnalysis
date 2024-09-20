@@ -155,18 +155,20 @@ class LogHandler:
 
     def get_event_log_all(self):
         proc_log = []
+        proc_kill_log = []
         activity_log = []
         top_activity_log = []
         for _ in self.all_events_log_list:
             el = EventLog(_)
-            proc, activity, top_activity = el.get_events_log()
+            proc, proc_kill_log, activity, top_activity = el.get_events_log()
             proc_log.append(proc)
             activity_log.append(activity)
             top_activity_log.append(top_activity)
-        return proc_log, activity_log, top_activity_log
+        return proc_log, proc_kill_log, activity_log, top_activity_log
 
     def get_event_log(self, ap_log_index):
         proc_log = []
+        proc_kill_log = []
         activity_log = []
         top_activity_log = []
         notification_log = []
@@ -174,12 +176,13 @@ class LogHandler:
         for _ in self.all_events_log_list:
             if ap_dir in _:
                 el = EventLog(_)
-                proc, activity, top_activity, notification = el.get_events_log()
+                proc, proc_kill, activity, top_activity, notification = el.get_events_log()
                 proc_log.append(proc)
+                proc_kill_log.append(proc_kill)
                 activity_log.append(activity)
                 top_activity_log.append(top_activity)
                 notification_log.append(notification)
-        return proc_log, activity_log, top_activity_log, notification_log
+        return proc_log, proc_kill_log, activity_log, top_activity_log, notification_log
 
     def get_property_log_all(self):
         properties_log = []
