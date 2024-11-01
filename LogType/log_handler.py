@@ -266,7 +266,3 @@ class LogHandler:
         self.all_events_log_list = events_log_list
         self.all_property_log_list = property_log_list
         return self.all_crash_log_list, self.all_main_log_list, self.all_sys_log_list, self.all_events_log_list, self.all_property_log_list
-
-# if __name__ == "__main__":
-#     origin_log_path = r'C:\Users\WangRuiLong\Desktop\C50v01出现报错\20240906_182930_log'
-#     log_handler = LogHandler(origin_log_path)
